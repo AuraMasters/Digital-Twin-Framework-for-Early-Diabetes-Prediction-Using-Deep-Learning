@@ -1,9 +1,9 @@
-# Digital Twin Architecture for Early Diabetes Prediction
+# Digital Twin Architecture for Early Diabetes Prediction & Food Nutrition Extraction
 
 ## 1. Executive Summary
-This framework establishes an end-to-end deep learning-powered **Digital Twin** architecture designed for early diabetes prediction, continuous glucose trajectory forecasting, and counterfactual clinical scenario simulation in Type 1 and Type 2 Diabetes cohorts.
+This framework establishes an end-to-end deep learning-powered **Digital Twin** architecture designed for early diabetes prediction, continuous glucose trajectory forecasting, image-based nutrition extraction, and counterfactual clinical scenario simulation in Type 1 and Type 2 Diabetes cohorts.
 
-The system ingests 5 heterogeneous, asynchronous physiological and lifestyle modalities, encodes them into a unified patient state embedding via recurrent networks, and models the temporal state-transition operator using a deep dynamics model.
+The system ingests 5 heterogeneous, asynchronous physiological and lifestyle modalities, encodes them into a unified patient state embedding via hybrid LSTM-CNN networks, and models the temporal state-transition operator using a deep dynamics model.
 
 ---
 
@@ -23,6 +23,11 @@ The architecture processes five distinct physiological time-series modalities so
 
 ## 3. Deep Learning Architecture Pipeline
 
+<div align="center">
+  <img src="../architecture.png" alt="Digital Twin Framework Architecture" width="90%">
+  <p><em>Figure 1: Architectural schematic of 5-modality ingestion, Hybrid LSTM-CNN state encoders, MLP fusion, and digital twin state-transition dynamics.</em></p>
+</div>
+
 ```
   ┌─────────────────────────────────────────────────────────────┐
   │                   5-Modality Input Stream                   │
@@ -32,7 +37,7 @@ The architecture processes five distinct physiological time-series modalities so
           ▼           ▼            ▼             ▼          ▼
      ┌─────────┐ ┌─────────┐ ┌───────────┐ ┌───────────┐ ┌─────────┐
      │ Glucose │ │ Insulin │ │ Nutrition │ │ Activity  │ │  Sleep  │
-     │   GRU   │ │   GRU   │ │    GRU    │ │    GRU    │ │   GRU   │
+     │LSTM+CNN │ │LSTM+CNN │ │ LSTM+CNN  │ │ LSTM+CNN  │ │LSTM+CNN │
      └────┬────┘ └────┬────┘ └─────┬─────┘ └─────┬─────┘ └────┬────┘
           │ (64d)     │ (64d)      │ (64d)       │ (64d)      │ (64d)
           └───────────┼────────────┼─────────────┼────────────┘
@@ -68,23 +73,51 @@ The architecture processes five distinct physiological time-series modalities so
 
 ---
 
-## 4. Digital Twin Operators
+## 4. Visual Food Nutrition Extractor (CNN)
 
-### 4.1 State Initialization
+```
+  ┌─────────────────────────────────────────────────────────────┐
+  │                    Input Food RGB Image                     │
+  │                        [3, H, W]                            │
+  └──────────────────────────────┬──────────────────────────────┘
+                                 ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │          Hierarchical 2D CNN Feature Extractor              │
+  │     [Conv2D + BatchNorm + ReLU + MaxPool + Dropout]         │
+  └──────────────────────────────┬──────────────────────────────┘
+                                 ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │              Global Adaptive Average Pooling                │
+  │                  Latent Feature (256d)                      │
+  └──────────────┬───────────────┬────────────────┬─────────────┘
+                 │               │                │
+                 ▼               ▼                ▼
+     ┌──────────────────────┐ ┌──────────────┐ ┌──────────────┐
+     │ Nutrient Regression  │ │  Meal Type   │ │   Food Tag   │
+     │      (8 targets)     │ │Classification│ │Classification│
+     │ [Calories, Carbs...] │ │ [Breakfast..]│ │ [Food IDs]   │
+     └──────────────────────┘ └──────────────┘ └──────────────┘
+```
+
+---
+
+## 5. Digital Twin Operators
+
+### 5.1 State Initialization
 $$\mathcal{S}_0 = \text{StateEncoder}(\mathbf{x}_{1:5})$$
 
-### 4.2 State Update (Observation Assimilation)
+### 5.2 State Update (Observation Assimilation)
 $$\mathcal{S}_t^{\text{twin}} \leftarrow \mathcal{S}_t^{\text{obs}}$$
 
-### 4.3 Counterfactual Scenario Simulation
+### 5.3 Counterfactual Scenario Simulation
 $$\widetilde{\mathcal{S}}_t = \mathcal{S}_t + \mathbf{\delta}$$
 
-### 4.4 Autoregressive Multi-Step Rollout
+### 5.4 Autoregressive Multi-Step Rollout
 $$\mathcal{S}_{t+k} = f_{\theta}(\mathcal{S}_{t+k-1}), \quad k = 1, \dots, H$$
 
 ---
 
-## 5. References & Literature Included
+## 6. References & Literature Included
 1. **GluNet**: A Deep Learning Framework For Accurate Blood Glucose Forecasting.
 2. **ReplayBG**: A Digital Twin-based Methodology for T1D In Silico Replay.
 3. **Young et al.**: Design and In Silico Evaluation of an Exercise Decision Support System using Digital Twin Models.
