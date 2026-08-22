@@ -1,0 +1,41 @@
+# Digital Twin Framework Configuration
+
+data:
+  raw_data_dir: "data/raw/t1d_uom_v1.0.3"
+  train_participants:
+    - "UoM2301"
+    - "UoM2302"
+    - "UoM2304"
+    - "UoM2305"
+    - "UoM2306"
+    - "UoM2307"
+    - "UoM2308"
+    - "UoM2309"
+    - "UoM2313"
+  test_participants:
+    - "UoM2401"
+    - "UoM2405"
+  max_history: 32
+  stride: 2
+  max_points: 1000
+
+model:
+  hidden_dim: 64
+  state_dim: 64
+  embeddings:
+    meal_type_dim: 10
+    meal_tag_dim: 10
+    activity_type_dim: 4
+    intensity_dim: 3
+
+training:
+  epochs: 25
+  batch_size: 128
+  learning_rate: 0.001
+  weight_decay: 0.00001
+  seed: 42
+
+evaluation:
+  rollout_horizons: [1, 5, 10, 30, 60]
+  stride: 1
+  max_points: 1500
