@@ -1,0 +1,16 @@
+dish_id,food_name,meal_type,food_tag,calories_kcal,carbohydrates_g,protein_g,fat_g,fiber_g,sugar_g,sodium_mg,portion_weight_g,image_path
+dish_001,Tofu & Edamame Salad Bowl,Lunch,Salad,380.0,28.5,22.0,18.0,8.5,4.2,420.0,320.0,images/dish_001_salad.jpg
+dish_002,Berry & Seed Oatmeal,Breakfast,Oatmeal,320.0,52.0,11.5,7.0,9.0,12.5,140.0,280.0,images/dish_002_oatmeal.jpg
+dish_003,Avocado Toast with Poached Egg,Breakfast,Toast,350.0,26.0,14.0,21.0,6.5,2.0,380.0,210.0,images/dish_003_avocado_toast.jpg
+dish_004,Greek Yogurt Berry Granola Parfait,Breakfast,Yogurt,290.0,38.0,18.0,6.5,4.0,19.0,95.0,250.0,images/dish_004_yogurt_parfait.jpg
+dish_005,Grilled Salmon with Asparagus & Quinoa,Dinner,Salmon,540.0,34.0,42.0,24.0,5.0,2.5,490.0,360.0,images/dish_005_salmon_plate.jpg
+dish_006,Gourmet Turkey & Avocado Burger,Lunch,Burger,620.0,46.0,38.0,28.0,5.5,6.0,780.0,310.0,images/dish_006_burger.jpg
+dish_007,Classic Pasta Pomodoro with Basil,Dinner,Pasta,480.0,74.0,14.0,12.0,5.0,7.5,520.0,330.0,images/dish_007_pasta.jpg
+dish_008,Grilled Sirloin Steak with Roasted Greens,Dinner,Steak,590.0,12.0,52.0,32.0,4.0,1.8,610.0,340.0,images/dish_008_steak.jpg
+dish_009,Rainbow Mediterranean Veggie Bowl,Lunch,VeggieBowl,340.0,42.0,12.0,14.0,9.5,6.0,360.0,350.0,images/dish_009_veggie_bowl.jpg
+dish_010,Acai & Mixed Berry Smoothie Bowl,Breakfast,Smoothie,310.0,58.0,8.0,5.5,7.5,26.0,65.0,300.0,images/dish_010_smoothie_bowl.jpg
+dish_011,Artisan Margherita Flatbread Pizza,Dinner,Pizza,580.0,62.0,24.0,22.0,4.0,5.0,820.0,270.0,images/dish_011_pizza.jpg
+dish_012,Whole Grain Turkey & Swiss Sandwich,Lunch,Sandwich,440.0,38.0,32.0,16.0,5.0,3.5,710.0,240.0,images/dish_012_sandwich.jpg
+dish_013,Shoyu Ramen with Egg & Vegetables,Dinner,Noodles,560.0,68.0,26.0,18.0,4.5,4.0,990.0,450.0,images/dish_013_ramen_noodles.jpg
+dish_014,Blueberry Protein Oat Pancakes,Breakfast,Pancakes,390.0,48.0,25.0,9.0,6.0,11.0,310.0,260.0,images/dish_014_protein_pancake.jpg
+dish_015,Garden Green Salad with Vinaigrette,Lunch,Salad,220.0,16.0,6.0,14.0,6.0,3.0,280.0,220.0,images/dish_015_green_salad.jpg

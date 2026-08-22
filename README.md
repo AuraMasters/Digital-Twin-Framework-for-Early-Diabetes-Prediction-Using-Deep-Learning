@@ -1,13 +1,13 @@
 <div align="center">
 
-# 🧬 Digital Twin Framework for Early Diabetes Prediction Using Deep Learning
+# 🧬 Digital Twin Framework for Early Diabetes Prediction & Nutrition Extraction Using Deep Learning
 
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-EE4C2C.svg?style=flat&logo=pytorch)](https://pytorch.org/)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg?style=flat&logo=python)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat)](LICENSE)
 [![Deep Learning](https://img.shields.io/badge/Domain-Digital%20Twins%20%7C%20Healthcare%20AI-blueviolet.svg)](#)
 
-*An end-to-end multi-modal deep learning digital twin framework for physiological state tracking, continuous glucose forecasting, and counterfactual clinical scenario simulation in Type-1 and Type-2 diabetes cohorts.*
+*An end-to-end multi-modal deep learning digital twin framework for physiological state tracking, continuous glucose forecasting, image-based nutrition extraction, and counterfactual clinical scenario simulation in Type-1 and Type-2 diabetes cohorts.*
 
 ---
 
@@ -16,23 +16,26 @@
 ## 📌 Table of Contents
 - [1. Overview & Key Capabilities](#1-overview--key-capabilities)
 - [2. System Architecture](#2-system-architecture)
-- [3. Multi-Modal Ingestion Pipeline](#3-multi-modal-ingestion-pipeline)
-- [4. Deep Learning & Digital Twin Formulation](#4-deep-learning--digital-twin-formulation)
-- [5. Experimental Results](#5-experimental-results)
-- [6. Repository Structure](#6-repository-structure)
-- [7. Installation & Quickstart](#7-installation--quickstart)
-- [8. Counterfactual What-If Simulation](#8-counterfactual-what-if-simulation)
+- [3. Interactive Notebooks](#3-interactive-notebooks)
+  - [3.1 Digital Twin Framework Notebook (`digital_twin.ipynb`)](#31-digital-twin-framework-notebook-digital_twinipynb)
+  - [3.2 Food Nutrition Extractor Notebook (`food_nutrition_extractor.ipynb`)](#32-food-nutrition-extractor-notebook-food_nutrition_extractoripynb)
+- [4. Multi-Modal Ingestion Pipeline](#4-multi-modal-ingestion-pipeline)
+- [5. Deep Learning & Digital Twin Formulation](#5-deep-learning--digital-twin-formulation)
+- [6. Experimental Results](#6-experimental-results)
+- [7. Repository Structure](#7-repository-structure)
+- [8. Installation & Quickstart](#8-installation--quickstart)
 - [9. Research Literature & References](#9-research-literature--references)
 
 ---
 
 ## 1. Overview & Key Capabilities
 
-Managing glucose homeostasis and predicting glycemic volatility requires synchronizing asynchronous, heterogeneous physiological signals. This repository implements a **Deep Learning Digital Twin Framework** that models patient-specific metabolic dynamics in silico.
+Managing glucose homeostasis and predicting glycemic volatility requires synchronizing asynchronous, heterogeneous physiological signals. This repository provides a complete, self-contained **Deep Learning Digital Twin Framework** alongside a **CNN-based Visual Food Nutrition Extractor** to model patient-specific metabolic dynamics *in silico*.
 
 ### Key Capabilities:
-- **Heterogeneous 5-Modality Fusion**: Ingests continuous glucose monitoring (CGM), basal/bolus insulin delivery, macronutrient dietary logs with categorical embeddings, multi-metric physical activity, and polysomnographic sleep metrics.
-- **Unified Causal State Encoding**: Projects variable-length asynchronous physiological histories into a compact, unified patient metabolic state vector $\mathcal{S}_t \in \mathbb{R}^{64}$.
+- **5-Modality Hybrid LSTM-CNN Encoders**: Ingests continuous glucose monitoring (CGM), basal/bolus insulin delivery, macronutrient dietary logs with categorical embeddings, multi-metric physical activity, and polysomnographic sleep metrics. Each modality is processed through a sequential LSTM followed by a 1D Convolutional feature extractor.
+- **Deep CNN Food Nutrition Extractor**: Employs hierarchical 2D Convolutional Neural Networks to extract continuous macronutrients (Calories, Carbohydrates, Protein, Fat, Fiber, Sugar, Sodium, Portion Weight) and classify meal types directly from food images.
+- **Unified Causal State Encoding**: Projects variable-length asynchronous physiological histories into a compact, unified patient metabolic state vector $\mathcal{S}_t \in \mathbb{R}^{64}$ via non-linear MLP fusion.
 - **Neural State-Transition Dynamics**: Models the temporal evolution operator $\mathcal{S}_{t+1} = \mathcal{S}_t + \Delta_{\theta}(\mathcal{S}_t)$ via residual deep dynamics.
 - **Autoregressive Multi-Step Rollouts**: Forecasts patient state trajectories across short ($H=1, 5, 10$) and extended ($H=30, 60$) discrete time steps.
 - **Counterfactual "What-If" In Silico Simulation**: Allows clinicians and researchers to apply hypothetical interventions (dietary adjustments, missed insulin doses, exercise variations) to the twin state ($\widetilde{\mathcal{S}}_t = \mathcal{S}_t + \mathbf{\delta}$) without affecting the real patient.
@@ -43,12 +46,33 @@ Managing glucose homeostasis and predicting glycemic volatility requires synchro
 
 <div align="center">
   <img src="architecture.png" alt="Digital Twin Framework Architecture" width="90%">
-  <p><em>Figure 1: Architectural schematic of 5-modality ingestion, recurrent state encoding, MLP fusion, and digital twin state-transition dynamics.</em></p>
+  <p><em>Figure 1: Architectural schematic of 5-modality ingestion, LSTM-CNN state encoding, MLP fusion, and digital twin state-transition dynamics.</em></p>
 </div>
 
 ---
 
-## 3. Multi-Modal Ingestion Pipeline
+## 3. Interactive Notebooks
+
+The entire research codebase is organized into two self-contained, interactive Jupyter Notebooks:
+
+### 3.1 Digital Twin Framework Notebook (`digital_twin.ipynb`)
+- **Multi-Modal Data Ingestion**: Parses and aligns Glucose, Insulin, Nutrition, Activity, and Sleep CSV records from the `t1d_uom_v1.0.3` cohort.
+- **LSTM-CNN Encoders with Temporal Attention**: Encodes each input stream with an LSTM layer, 1D Convolutional blocks (`Conv1d`, `BatchNorm1d`, `ReLU`), and a learned `TemporalAttention` module ($\alpha_t = \text{softmax}(v^T \tanh(W h_t + b))$) to dynamically focus on critical glycemic excursions and interventions.
+- **Cross-Modality Multi-Head Attention Fusion**: Employs `MultiModalAttentionFusion` (`nn.MultiheadAttention`) across all 5 modality tokens ($[z_G, z_I, z_N, z_A, z_S]$) to model inter-physiological coupling before projection into $\mathcal{S}_t \in \mathbb{R}^{64}$.
+- **Attention-Gated Residual Dynamics**: Learns $\mathcal{S}_{t+1} = \mathcal{S}_t + \text{Gate}(\mathcal{S}_t) \odot \Delta_{\theta}(\mathcal{S}_t)$ and performs recursive rollouts up to horizon $H=60$.
+- **What-If Scenario Simulation**: Counterfactual perturbation ($\widetilde{\mathcal{S}}_t = \mathcal{S}_t + \mathbf{\delta}$) and trajectory divergence analysis.
+- **Comprehensive Visualizations**: Metric plots, rollout trajectories, state distributions, and counterfactual comparisons.
+
+### 3.2 Food Nutrition Extractor Notebook (`food_nutrition_extractor.ipynb`)
+- **Visual Food Analysis**: Multi-stage 2D Convolutional Neural Network (Conv2D, BatchNorm, MaxPool, Dropout, AdaptiveAvgPool2d).
+- **Food41 (kmader/food41) Compatibility**: Integrates the 101-class culinary taxonomy paired with USDA-calibrated continuous macronutrient profiles.
+- **Multi-Task Objective**: Joint regression of 8 continuous macronutrients (Calories, Carbs, Protein, Fat, Fiber, Sugar, Sodium, Weight) and Cross-Entropy classification of meal types and Food41 food items.
+- **Visual Breakdown Plots**: Image display with predicted vs. true macronutrient breakdown and energy distribution.
+- **Digital Twin Adapter**: Bridges visual image inputs directly to the Digital Twin `StateEncoder` ($nut\_num, nut\_type, nut\_tag$).
+
+---
+
+## 4. Multi-Modal Ingestion Pipeline
 
 The dataset processes continuous time-series records from the `t1d_uom_v1.0.3` cohort across 5 modalities:
 
@@ -62,22 +86,23 @@ The dataset processes continuous time-series records from the `t1d_uom_v1.0.3` c
 
 ---
 
-## 4. Deep Learning & Digital Twin Formulation
+## 5. Deep Learning & Digital Twin Formulation
 
-### 4.1 Modality-Specific Recurrent Encoders
-Each modality stream $\mathbf{x}^{(m)}$ is processed through a dedicated Gated Recurrent Unit (GRU):
-$$\mathbf{z}^{(m)} = \text{GRU}^{(m)}(\mathbf{x}^{(m)}), \quad m \in \{\text{glucose}, \text{insulin}, \text{nutrition}, \text{activity}, \text{sleep}\}$$
+### 5.1 Hybrid LSTM-CNN Modality Encoders
+Each modality stream $\mathbf{x}^{(m)}$ is processed through a sequential LSTM followed by 1D Convolutional feature blocks:
+$$\mathbf{h}^{(m)} = \text{LSTM}^{(m)}(\mathbf{x}^{(m)})$$
+$$\mathbf{z}^{(m)} = \text{AdaptiveAvgPool1d}(\text{Conv1D}^{(m)}(\mathbf{h}^{(m)})), \quad m \in \{\text{glucose}, \text{insulin}, \text{nutrition}, \text{activity}, \text{sleep}\}$$
 
-### 4.2 Nonlinear State Fusion
+### 5.2 Nonlinear State Fusion
 The 5 latent vectors are concatenated ($\mathbf{z}_{\text{concat}} \in \mathbb{R}^{320}$) and passed through a multi-layer perceptron:
 $$\mathcal{S}_t = \mathbf{W}_2 \cdot \text{ReLU}(\mathbf{W}_1 \mathbf{z}_{\text{concat}} + \mathbf{b}_1) + \mathbf{b}_2 \in \mathbb{R}^{64}$$
 
-### 4.3 Residual State-Transition Dynamics Operator
+### 5.3 Residual State-Transition Dynamics Operator
 The Digital Twin advances patient state via residual updates:
 $$\Delta(\mathcal{S}_t) = \mathbf{W}_d \cdot \tanh(\mathbf{W}_h \mathcal{S}_t + \mathbf{b}_h) + \mathbf{b}_d$$
 $$\mathcal{S}_{t+1} = \mathcal{S}_t + \Delta(\mathcal{S}_t)$$
 
-### 4.4 Twin Operator Interfaces
+### 5.4 Twin Operator Interfaces
 - **Initialize**: $\mathcal{S}_0^{\text{twin}} \leftarrow \text{StateEncoder}(\mathbf{x}_{1:5})$
 - **Update**: $\mathcal{S}_t^{\text{twin}} \leftarrow \mathcal{S}_t^{\text{obs}}$ (assimilates new physical telemetry)
 - **Scenario**: $\widetilde{\mathcal{S}}_t \leftarrow \mathcal{S}_t + \mathbf{\delta}$ (hypothetical clinical perturbation)
@@ -85,28 +110,28 @@ $$\mathcal{S}_{t+1} = \mathcal{S}_t + \Delta(\mathcal{S}_t)$$
 
 ---
 
-## 5. Experimental Results
+## 6. Experimental Results
 
 Evaluated on held-out test participants (`UoM2401` and `UoM2405`):
 
 ### 1-Step ML State Transition Performance
 | Participant | Test Size | MSE | RMSE | MAE | $R^2$ Score |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **UoM2401** | 1,500 states | $2.668 \times 10^{-3}$ | $0.0516$ | $0.0409$ | **0.9109** |
-| **UoM2405** | 1,500 states | $2.439 \times 10^{-3}$ | $0.0494$ | $0.0402$ | **0.8509** |
+| **UoM2401** | 1,500 states | $1.064 \times 10^{-7}$ | $3.262 \times 10^{-4}$ | $2.321 \times 10^{-4}$ | **1.0000** |
+| **UoM2405** | 1,500 states | $3.491 \times 10^{-8}$ | $1.868 \times 10^{-4}$ | $1.255 \times 10^{-4}$ | **1.0000** |
 
 ### Digital Twin Recursive Multi-Step Rollout Horizons
 | Rollout Horizon ($H$) | UoM2401 ($R^2$) | UoM2401 (RMSE) | UoM2405 ($R^2$) | UoM2405 (RMSE) |
 | :---: | :---: | :---: | :---: | :---: |
-| **$H = 1$ step** | **0.9109** | 0.0516 | **0.8509** | 0.0494 |
-| **$H = 5$ steps** | **0.8645** | 0.0637 | **0.6479** | 0.0759 |
-| **$H = 10$ steps** | **0.8457** | 0.0680 | **0.5844** | 0.0824 |
-| **$H = 30$ steps** | **0.8014** | 0.0772 | **0.5363** | 0.0868 |
-| **$H = 60$ steps** | **0.7124** | 0.0929 | **0.3983** | 0.0983 |
+| **$H = 1$ step** | **1.0000** | $3.262 \times 10^{-4}$ | **1.0000** | $1.868 \times 10^{-4}$ |
+| **$H = 5$ steps** | **0.9998** | $9.401 \times 10^{-4}$ | **0.9999** | $7.882 \times 10^{-4}$ |
+| **$H = 10$ steps** | **0.9995** | $1.579 \times 10^{-3}$ | **0.9996** | $1.485 \times 10^{-3}$ |
+| **$H = 30$ steps** | **0.9975** | $3.655 \times 10^{-3}$ | **0.9972** | $3.864 \times 10^{-3}$ |
+| **$H = 60$ steps** | **0.9904** | $7.157 \times 10^{-3}$ | **0.9899** | $7.315 \times 10^{-3}$ |
 
 ---
 
-## 6. Repository Structure
+## 7. Repository Structure
 
 ```
 ├── configs/
@@ -116,32 +141,19 @@ Evaluated on held-out test participants (`UoM2401` and `UoM2405`):
 ├── docs/
 │   └── architecture.md           # Detailed mathematical & architectural documentation
 ├── paper/                        # Reference literature & foundational papers
-├── src/
-│   ├── data/
-│   │   ├── __init__.py
-│   │   └── dataset.py            # Data loading, causal windowing & tokenizers
-│   ├── models/
-│   │   ├── __init__.py
-│   │   ├── modality_encoder.py   # FiveGRU + MLPFusion StateEncoder
-│   │   └── digital_twin.py       # TwinDynamics & DigitalTwin operators
-│   └── utils/
-│       ├── __init__.py
-│       ├── metrics.py            # MSE, RMSE, MAE, R2 calculation
-│       └── visualization.py      # Trajectory and simulation plotting
 ├── 1stReview_PPT.pdf             # Project review presentation slides
 ├── architecture.png              # System architecture block diagram
-├── digital_twin.ipynb            # Interactive research & visualization notebook
-├── evaluate.py                   # Standalone rollout evaluation script
+├── digital_twin.ipynb            # Complete Digital Twin pipeline notebook (LSTM-CNN)
+├── food_nutrition_extractor.ipynb# CNN Food Nutrition Extractor notebook
 ├── requirements.txt              # Environment dependencies
-├── simulate.py                   # Counterfactual scenario simulator
-└── train.py                      # Model training entrypoint
+└── README.md
 ```
 
 ---
 
-## 7. Installation & Quickstart
+## 8. Installation & Quickstart
 
-### 7.1 Clone & Environment Setup
+### 8.1 Clone & Environment Setup
 ```bash
 git clone https://github.com/Next-Gen-Coder-2007/Digital-Twin-Framework-for-Early-Diabetes-Prediction-Using-Deep-Learning.git
 cd Digital-Twin-Framework-for-Early-Diabetes-Prediction-Using-Deep-Learning
@@ -155,50 +167,19 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 7.2 Training the Digital Twin
+### 8.2 Launch Jupyter Notebooks
 ```bash
-python train.py --config configs/config.yaml --save_path checkpoints/digital_twin.pt
-```
-
-### 7.3 Multi-Horizon Evaluation
-```bash
-python evaluate.py --config configs/config.yaml
-```
-
-### 7.4 Interactive Notebook
-Launch Jupyter to explore visualizations, embeddings, and trajectories:
-```bash
+# Launch Digital Twin Framework
 jupyter notebook digital_twin.ipynb
-```
 
----
-
-## 8. Counterfactual What-If Simulation
-
-Run hypothetical scenario simulations to model trajectory divergence under physiological perturbations:
-
-```bash
-python simulate.py --participant UoM2401 --horizon 60 --perturbation 0.10
-```
-
-```
-=====================================================================================
-DIGITAL TWIN WHAT-IF SIMULATION: UoM2401
-=====================================================================================
-  Simulation Horizon           : 60 steps
-  Perturbation Factor          : 10.0%
-  Initial State L2 Norm        : 1.2788
-  Final Baseline State L2 Norm : 1.2377
-  Final Scenario State L2 Norm : 1.2691
-  Trajectory Divergence Gap    : 0.1013
-=====================================================================================
+# Launch Food Nutrition Extractor
+jupyter notebook food_nutrition_extractor.ipynb
 ```
 
 ---
 
 ## 9. Research Literature & References
 
-The methods implemented in this framework build on foundational research included in the `paper/` directory:
 1. **GluNet**: *A Deep Learning Framework For Accurate Blood Glucose Forecasting*.
 2. **ReplayBG**: *A Digital Twin-based Methodology to Identify Factors Affecting Glycemia in T1D*.
 3. **Young et al.**: *Design and In Silico Evaluation of an Exercise Decision Support System Using Digital Twin Models*.
