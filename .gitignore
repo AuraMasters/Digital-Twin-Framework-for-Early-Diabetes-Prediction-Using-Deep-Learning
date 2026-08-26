@@ -82,3 +82,17 @@ outputs/
 *~
 .DS_Store
 Thumbs.db
+
+# Datasets and Large Binary Archives
+nutrition/
+data/
+models/
+*.pkl
+*.pickle
+*.xlsx
+*.xls
+*.h5
+*.hdf5
+*.parquet
+*.feather
+
