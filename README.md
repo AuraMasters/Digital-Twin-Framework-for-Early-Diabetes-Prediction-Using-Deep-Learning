@@ -18,7 +18,8 @@
 - [2. System Architecture](#2-system-architecture)
 - [3. Interactive Notebooks](#3-interactive-notebooks)
   - [3.1 Digital Twin Framework Notebook (`digital_twin.ipynb`)](#31-digital-twin-framework-notebook-digital_twinipynb)
-  - [3.2 Food Nutrition Extractor Notebook (`food_nutrition_extractor.ipynb`)](#32-food-nutrition-extractor-notebook-food_nutrition_extractoripynb)
+  - [3.2 Multimodal Nutrition Analysis & Visual Extraction (`nutrition_analysis.ipynb`)](#32-multimodal-nutrition-analysis--visual-extraction-nutrition_analysisipynb)
+  - [3.3 Food Nutrition Extractor Notebook (`food_nutrition_extractor.ipynb`)](#33-food-nutrition-extractor-notebook-food_nutrition_extractoripynb)
 - [4. Multi-Modal Ingestion Pipeline](#4-multi-modal-ingestion-pipeline)
 - [5. Deep Learning & Digital Twin Formulation](#5-deep-learning--digital-twin-formulation)
 - [6. Experimental Results](#6-experimental-results)
@@ -53,7 +54,7 @@ Managing glucose homeostasis and predicting glycemic volatility requires synchro
 
 ## 3. Interactive Notebooks
 
-The entire research codebase is organized into two self-contained, interactive Jupyter Notebooks:
+The entire research codebase is organized into self-contained, interactive Jupyter Notebooks:
 
 ### 3.1 Digital Twin Framework Notebook (`digital_twin.ipynb`)
 - **Multi-Modal Data Ingestion**: Parses and aligns Glucose, Insulin, Nutrition, Activity, and Sleep CSV records from the `t1d_uom_v1.0.3` cohort.
@@ -63,12 +64,13 @@ The entire research codebase is organized into two self-contained, interactive J
 - **What-If Scenario Simulation**: Counterfactual perturbation ($\widetilde{\mathcal{S}}_t = \mathcal{S}_t + \mathbf{\delta}$) and trajectory divergence analysis.
 - **Comprehensive Visualizations**: Metric plots, rollout trajectories, state distributions, and counterfactual comparisons.
 
-### 3.2 Food Nutrition Extractor Notebook (`food_nutrition_extractor.ipynb`)
-- **Visual Food Analysis**: Multi-stage 2D Convolutional Neural Network (Conv2D, BatchNorm, MaxPool, Dropout, AdaptiveAvgPool2d).
-- **Food41 (kmader/food41) Compatibility**: Integrates the 101-class culinary taxonomy paired with USDA-calibrated continuous macronutrient profiles.
-- **Multi-Task Objective**: Joint regression of 8 continuous macronutrients (Calories, Carbs, Protein, Fat, Fiber, Sugar, Sodium, Weight) and Cross-Entropy classification of meal types and Food41 food items.
-- **Visual Breakdown Plots**: Image display with predicted vs. true macronutrient breakdown and energy distribution.
-- **Digital Twin Adapter**: Bridges visual image inputs directly to the Digital Twin `StateEncoder` ($nut\_num, nut\_type, nut\_tag$).
+### 3.2 Multimodal Nutrition Analysis & Visual Extraction (`nutrition_analysis.ipynb`)
+- **Dataset Characterization & Schema Alignment**: Ingests and cross-validates 5,006 dishes, 28,455 ingredient breakdown records, 555 reference ingredients, and 3,490 synchronized overhead dishes.
+- **Nutritional EDA & Energy Decomposition**: Statistical distributions, Atwater caloric energy shares (Carbs vs Protein vs Fat), and multivariate Pearson correlation analysis.
+- **Clinical Glycemic Segmentation**: Categorization of dishes into 4 diabetes-relevant carbohydrate tiers (Low Carb, Moderate, High Carb, Extreme Glycemic Load).
+- **Multimodal Visual & Sensor Topography**: Decodes binary RGB and Depth image streams, renders 4x4 visual galleries, detailed dish decomposition breakdowns, and 3D surface height mesh profiles.
+- **PyTorch Dataset Pipeline**: Production-ready `NutritionDataset` with data augmentation and multi-target continuous regression tensors ($[calories, mass, fat, carb, protein]$).
+- **Digital Twin Ingestion Bridge**: Demonstrates translation of visual macronutrient estimates directly into the patient state vector $\mathcal{S}_t$.
 
 ---
 
