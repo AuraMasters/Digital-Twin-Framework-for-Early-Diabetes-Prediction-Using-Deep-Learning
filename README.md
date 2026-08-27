@@ -3,7 +3,7 @@
 # 🧬 Digital Twin Framework for Early Diabetes Prediction & Nutrition Extraction Using Deep Learning
 
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-EE4C2C.svg?style=flat&logo=pytorch)](https://pytorch.org/)
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg?style=flat&logo=python)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg?style=flat&logo=python)](https://www.python.org/) 
 [![License](https://img.shields.io/badge/License-MIT-green.svg?style=flat)](LICENSE)
 [![Deep Learning](https://img.shields.io/badge/Domain-Digital%20Twins%20%7C%20Healthcare%20AI-blueviolet.svg)](#)
 
